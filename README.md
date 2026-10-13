@@ -1,4 +1,4 @@
-# b4f_initiative_bootcamp_week_2_reservation_system
+# b4f_initiative_bootcamp_week_2_reservation_system_server
 
 a collaborative project, reservation system, nodejs, mongodb, and express (backend/server), react (front-end)
 
@@ -29,7 +29,7 @@ $ npm i
 $ npm run dev
 ```
 
-### 4. Navigate To client directory, install packages, and start server
+### 4. Navigate To client directory, install packages, and start server (See Client Repo)
 
 ```bash
 $ cd client/
@@ -45,10 +45,21 @@ $ npm run dev
 server/
 ├── app.js
 ├── config/
+            ├── mongodb.js
 ├── controllers/
+            ├── service.controller.js
+            ├── appointment.controller.js
 ├── models/
+            ├── service.model.js
+            ├── appointment.model.js
 ├── routes/
+            ├── service.routes.js
+            ├── appointment.routes.js
 └── server.js
 ```
 
 ### Client
+
+#### Go to the client repo to see details
+
+[Front-End Repo](https://github.com/ahmadharbi0x1337/b4f_initiative_bootcamp_week_2_reservation_system_client)
