@@ -1,3 +1,4 @@
+import Appointment from "../models/appointment.model.js";
 import Service from "../models/service.model.js";
 
 // 1. GET ALL SERVICES
@@ -7,7 +8,7 @@ export const getServicesController = async (req, res) => {
     return res.status(200).json(services);
   } catch (error) {
     return res
-      .status(500)
+      .status(404)
       .json({ message: "Server error", error: error.message });
   }
 };
@@ -24,7 +25,7 @@ export const getServiceByIdController = async (req, res) => {
     return res.status(200).json(service);
   } catch (error) {
     return res
-      .status(500)
+      .status(404)
       .json({ message: "Server error", error: error.message });
   }
 };
@@ -35,18 +36,18 @@ export const createServiceController = async (req, res) => {
     const { name, duration, price } = req.body;
     if (!name || !duration || !price) {
       return res
-        .status(400)
+        .status(404)
         .json({ message: "name, duration and price are required" });
     }
     const newService = await Service.create({ name, duration, price });
 
-    return res.status(201).json({
+    return res.status(200).json({
       message: "Service created successfully",
       data: newService,
     });
   } catch (error) {
     return res
-      .status(500)
+      .status(404)
       .json({ message: "Server error", error: error.message });
   }
 };
@@ -73,28 +74,37 @@ export const updateOneServiceController = async (req, res) => {
     });
   } catch (error) {
     return res
-      .status(500)
+      .status(404)
       .json({ message: "Server error", error: error.message });
   }
 };
 
-// 5. DELETE SERVICE
+// 5. DELETE SERVICE (with proper cascading appointment deletion)
 export const deleteOneServiceController = async (req, res) => {
   try {
     const serviceId = req.params.id;
-    const deletedService = await Service.findByIdAndDelete(serviceId);
 
+    // Check if service exists first
+    const deletedService = await Service.findByIdAndDelete(serviceId);
     if (!deletedService) {
       return res.status(404).json({ message: "Service not found to delete" });
     }
 
+    // Find and delete all connected appointments properly
+    const attachedAppointments = await Appointment.find({ serviceId });
+    await Promise.all(
+      attachedAppointments.map(async (appointment) => {
+        await Appointment.findByIdAndDelete(appointment._id);
+      }),
+    );
+
     return res.status(200).json({
-      message: "Service deleted successfully",
+      message: "Service and all connected appointments deleted successfully",
       data: deletedService,
     });
   } catch (error) {
     return res
-      .status(500)
+      .status(404)
       .json({ message: "Server error", error: error.message });
   }
 };
